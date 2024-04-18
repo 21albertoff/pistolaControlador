@@ -13,14 +13,14 @@
         <br>
         <h2 style="padding: 33px;text-align: center; margin-left: -7px;">Lectura con pistola</h2>
         <?php
-        // Mostrar el último valor leído desde la base de datos
+        //Mostrar el valor de la ultima 
         $conexion = new mysqli("localhost", "root", "", "pistola");
 
         if ($conexion->connect_error) {
             die("Conexión fallida: " . $conexion->connect_error);
         }
 
-        $sql = "SELECT valor FROM datos ORDER BY fecha_creacion DESC LIMIT 1";
+        $sql = "SELECT valor FROM datos WHERE centro LIKE '1450' ORDER BY fecha_creacion DESC LIMIT 1";
         $resultado = $conexion->query($sql);
 
         if ($resultado->num_rows > 0) {
@@ -33,6 +33,7 @@
         ?>
         <form action="process.php" method="post">
             <input type="text" id="valor" name="valor" required>
+            <input type="hidden" id="centro" name="centro" value="1450">
             <button type="submit">Guardar</button>
         </form>
     </div>

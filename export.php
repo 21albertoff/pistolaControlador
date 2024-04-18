@@ -11,9 +11,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Obtener fechas desde el formulario
     $fechaInicio = $_POST["fecha_inicio"];
     $fechaFin = $_POST["fecha_fin"];
+    $centro = $_POST["centro"];
+   
+    $sqlExport = "SELECT * FROM datos WHERE centro LIKE '$centro' AND fecha_creacion BETWEEN '$fechaInicio 00:00:00' AND '$fechaFin 23:59:59'";
 
-    // Consultar datos en el rango de fechas
-    $sqlExport = "SELECT * FROM datos WHERE fecha_creacion BETWEEN '$fechaInicio 00:00:00' AND '$fechaFin 23:59:59'";
+    if ($centro === "Todos"){
+        $sqlExport = "SELECT * FROM datos WHERE fecha_creacion BETWEEN '$fechaInicio 00:00:00' AND '$fechaFin 23:59:59'";
+    }
+
     $resultadoExport = $conexion->query($sqlExport);
 
     if ($resultadoExport) {
@@ -21,7 +26,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         header('Content-Type: application/vnd.ms-excel');
         header('Content-Disposition: attachment; filename="pistola_datos.xls"');
         echo '<table border="1">';
-
         while ($fila = $resultadoExport->fetch_assoc()) {
             echo '<tr>
                     <td>' . $fila["valor"] . '</td>
@@ -57,6 +61,17 @@ $conexion->close();
             <div class="form-group">
                 <label for="fecha_fin">Fecha de Fin:</label>
                 <input type="date" class="form-control" id="fecha_fin" name="fecha_fin" value="<?= date('Y-m-d'); ?>" required>
+            </div>
+            <div class="form-group">
+                <label for="centro">Centro:</label>
+                <select class="form-control" id="centro" name="centro" required>
+                    <option value="Todos" selected>Todos</option>
+                    <option value="1450">Adra</option>
+                    <option value="1500">Primores</option>
+                    <option value="1300">La Redonda</option>
+                    <option value="1350">Merpo</option>
+                    <!-- Puedes añadir más opciones aquí -->
+                </select>
             </div>
             <button type="submit" class="btn btn-primary">Exportar a Excel</button>
         </form>

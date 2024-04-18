@@ -7,6 +7,7 @@ if ($conexion->connect_error) {
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $valor = $_POST["valor"];
+    $centro = $_POST["centro"];
     $fechaCreacion = date("Y-m-d H:i:s");
 
     // Separar el valor por la primera letra que encuentre
@@ -26,7 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 if ($existenRegistros == 0) {
                     // No existe un registro con el mismo valor en la misma fecha, proceder con la inserción
-                    $sql = "INSERT INTO datos (valor, fecha_creacion) VALUES ('$v', '$fechaCreacion')";
+                    $sql = "INSERT INTO datos (valor, centro, fecha_creacion) VALUES ('$v', '$centro', '$fechaCreacion')";
                     $conexion->query($sql);
                 }
             }
