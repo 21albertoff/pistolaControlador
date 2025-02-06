@@ -18,7 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $v = trim($v); // Eliminar espacios en blanco
         if (!empty($v)) {
             // Verificar si ya existe un registro con el mismo valor en la misma fecha
-            $sqlVerificar = "SELECT COUNT(*) as count FROM datos WHERE valor = '$v' AND centro LIKE '1400' AND DATE(fecha_creacion) = CURDATE()";
+            $sqlVerificar = "SELECT COUNT(*) as count FROM datos WHERE valor = '$v' AND tipo != '2' AND centro LIKE '1550' AND DATE(fecha_creacion) = CURDATE()";
             $resultadoVerificar = $conexion->query($sqlVerificar);
 
             if ($resultadoVerificar) {
@@ -27,19 +27,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 if ($existenRegistros == 0) {
                     // No existe un registro con el mismo valor en la misma fecha, proceder con la inserción
-                    $sql = "INSERT INTO datos (valor, centro, fecha_creacion) VALUES ('$v', '$centro', '$fechaCreacion')";
+                    $sql = "INSERT INTO datos (valor, centro, tipo, fecha_creacion) VALUES ('$v', '$centro', 1, '$fechaCreacion')";
                     $conexion->query($sql);
                 }
             }
         }
     }
+	
+	// Determinar la fecha del archivo y el rango de tiempo para filtrar registros
+    $currentHour = date('H');
+    $currentDate = date('Y-m-d');
 
-    // Generar archivo CSV con registros de la fecha actual
-   $sqlExportToday = "SELECT * FROM datos WHERE DATE(fecha_creacion) = CURDATE() AND centro LIKE '1400'";
+    if ($currentHour < 16) {
+        // Si es antes de las 16:00, la fecha del archivo es la fecha actual
+        $fechaArchivo = date('d-m-Y');
+        // Filtrar los registros desde las 16:00 de ayer hasta las 15:59 de hoy
+        $startDateTime = date('Y-m-d 16:00:00', strtotime('-1 day'));
+        $endDateTime = date('Y-m-d 15:59:59');
+    } else {
+        // Si es después de las 16:00, la fecha del archivo es la fecha de mañana
+        $fechaArchivo = date('d-m-Y', strtotime('+1 day'));
+        // Filtrar los registros desde las 16:00 de hoy hasta las 15:59 de mañana
+        $startDateTime = date('Y-m-d 16:00:00');
+        $endDateTime = date('Y-m-d 15:59:59', strtotime('+1 day'));
+    }
+
+   // Generar archivo CSV con registros de la fecha actual
+   $sqlExportToday = "SELECT * FROM datos WHERE DATE(fecha_creacion) = CURDATE() AND centro LIKE '1550' AND tipo != '2' AND fecha_creacion BETWEEN '$startDateTime' AND '$endDateTime'";
    $resultadoExportToday = $conexion->query($sqlExportToday);
 
    if ($resultadoExportToday && $resultadoExportToday->num_rows > 0) {
-       $filename = "inv_1450_" . date('d-m-Y') . ".csv"; // Nombre del archivo con la fecha actual
+       $filename = "inv_1550_" . $fechaArchivo . "_p1.csv"; // Nombre del archivo con la fecha determinada
        $filepath = "C:/INV-SAP/S4P/I/$filename"; // Ruta completa del archivo en Windows
        
        $csvFile = fopen($filepath, 'w');
@@ -49,13 +67,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
        }
 
        fclose($csvFile);
+
    } else {
        echo "No hay registros para exportar hoy.";
    }
 
+   exec('C:/sincronizarInventario.bat');
 
-    // Redireccionar al formulario después del registro exitoso
-    header("Location: index.php");
+    //Redireccionar al formulario después del registro exitoso
+    header("Location: 1550.php");
     exit();
 }
 

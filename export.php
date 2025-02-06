@@ -22,17 +22,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $resultadoExport = $conexion->query($sqlExport);
 
     if ($resultadoExport) {
-        // Crear archivo Excel
-        header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment; filename="pistola_datos.xls"');
-        echo '<table border="1">';
+        // Crear archivo CSV
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="pistola_datos.csv"');
+        
+        // Cabecera del archivo CSV
+        echo "valor\n";
+        
         while ($fila = $resultadoExport->fetch_assoc()) {
-            echo '<tr>
-                    <td>' . $fila["valor"] . '</td>
-                </tr>';
+            echo '"' . $fila["valor"] . '"' . "\n";
         }
 
-        echo '</table>';
         exit();
     } else {
         echo "Error al exportar datos: " . $conexion->error;
@@ -48,11 +48,11 @@ $conexion->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <title>Exportar a Excel</title>
+    <title>Exportar a CSV</title>
 </head>
 <body>
     <div class="container mt-5">
-        <h2>Exportar Datos a Excel</h2>
+        <h2>Exportar Datos a CSV</h2>
         <form action="export.php" method="post">
             <div class="form-group">
                 <label for="fecha_inicio">Fecha de Inicio:</label>
@@ -73,7 +73,7 @@ $conexion->close();
                     <!-- Puedes añadir más opciones aquí -->
                 </select>
             </div>
-            <button type="submit" class="btn btn-primary">Exportar a Excel</button>
+            <button type="submit" class="btn btn-primary">Exportar a CSV</button>
         </form>
     </div>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>

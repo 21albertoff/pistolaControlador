@@ -20,7 +20,7 @@
             die("Conexión fallida: " . $conexion->connect_error);
         }
 
-        $sql = "SELECT valor FROM datos WHERE centro LIKE '1450' ORDER BY fecha_creacion DESC LIMIT 1";
+        $sql = "SELECT valor FROM datos WHERE centro LIKE '1300' AND tipo != '2' ORDER BY fecha_creacion DESC LIMIT 1";
         $resultado = $conexion->query($sql);
 
         if ($resultado->num_rows > 0) {
@@ -31,7 +31,7 @@
 
         $conexion->close();
         ?>
-        <form action="process.php" method="post">
+        <form action="process1300.php" method="post">
             <input type="text" id="valor" name="valor" required>
             <input type="hidden" id="centro" name="centro" value="1300">
             <button type="submit">Guardar</button>
