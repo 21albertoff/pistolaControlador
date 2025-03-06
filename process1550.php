@@ -72,7 +72,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
        echo "No hay registros para exportar hoy.";
    }
 
-   exec('C:/sincronizarInventario.bat');
+    exec('C:/sincronizarInventario.bat');
 
     //Redireccionar al formulario después del registro exitoso
     header("Location: 1550.php");

@@ -68,6 +68,7 @@ $conexion->close();
                     <option value="Todos" selected>Todos</option>
                     <option value="1450">Adra</option>
                     <option value="1500">Primores</option>
+                    <option value="1550">Nice</option>
                     <option value="1300">La Redonda</option>
                     <option value="1350">Merpo</option>
                     <!-- Puedes añadir más opciones aquí -->
