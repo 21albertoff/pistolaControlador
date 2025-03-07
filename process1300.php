@@ -58,7 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
    if ($resultadoExportToday && $resultadoExportToday->num_rows > 0) {
        $filename = "inv_1300_" . $fechaArchivo . "_p1.csv"; // Nombre del archivo con la fecha determinada
-       $filepath = "C:/INV-SAP/S4P/I/$filename"; // Ruta completa del archivo en Windows
+       $filepath = "\\\\192.168.40.47\\INV-SAP\\S4P\\I\\$filename"; // Ruta completa del archivo en Windows
        
        $csvFile = fopen($filepath, 'w');
        // Escribir datos en el archivo CSV
