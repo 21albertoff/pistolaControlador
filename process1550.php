@@ -37,17 +37,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 	// Determinar la fecha del archivo y el rango de tiempo para filtrar registros
     $currentHour = date('H');
     $currentDate = date('Y-m-d');
+    $diaSemana = date('N'); // 1 = Lunes, 7 = Domingo
 
     if ($currentHour < 16) {
-        // Si es antes de las 16:00, la fecha del archivo es la fecha actual
-        $fechaArchivo = date('d-m-Y');
-        // Filtrar los registros desde las 16:00 de ayer hasta las 15:59 de hoy
+        if ($diaSemana == 1) {
+            // Es lunes antes de las 16:00 -> usar fecha del sábado
+            $fechaArchivo = date('d-m-Y', strtotime('-2 days')); // sábado
+        } else {
+            // Cualquier otro día antes de las 16:00 -> usar fecha del día anterior
+            $fechaArchivo = date('d-m-Y', strtotime('-1 day'));
+        }
         $startDateTime = date('Y-m-d 16:00:00', strtotime('-1 day'));
         $endDateTime = date('Y-m-d 15:59:59');
     } else {
-        // Si es después de las 16:00, la fecha del archivo es la fecha de mañana
-        $fechaArchivo = date('d-m-Y', strtotime('+1 day'));
-        // Filtrar los registros desde las 16:00 de hoy hasta las 15:59 de mañana
+        // A partir de las 16:00 o después -> usar fecha actual
+        $fechaArchivo = date('d-m-Y');
         $startDateTime = date('Y-m-d 16:00:00');
         $endDateTime = date('Y-m-d 15:59:59', strtotime('+1 day'));
     }
@@ -58,7 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
    if ($resultadoExportToday && $resultadoExportToday->num_rows > 0) {
        $filename = "inv_1550_" . $fechaArchivo . "_p1.csv"; // Nombre del archivo con la fecha determinada
-       $filepath = "\\\\192.168.40.47\\INV-SAP\\S4P\\I\\$filename"; // Ruta completa del archivo en Windows
+       $filepath = "\\\\192.168.40.47\\INV-SAP\\S4Q\\I\\$filename"; // Ruta completa del archivo en Windows
        
        $csvFile = fopen($filepath, 'w');
        // Escribir datos en el archivo CSV
